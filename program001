@@ -1,0 +1,27 @@
+#include <avr/io.h>
+#include <util/delay.h>
+
+int main()
+{
+    DDRB = 0xFF; //Configura todos os pinos de PORTB como saída
+    ADMUX = 0x00; //Seleciona o canal ADC0 como entrada analógica
+    ADCSRA = 0x87; //Habilita o ADC e define o prescaler para 128
+    
+    while (1)
+    {
+        ADCSRA |= (1<<ADSC); //Inicia a conversão analógica-digital
+        while (ADCSRA & (1<<ADSC)); //Aguarda a conversão ser concluída
+        
+        int valor_adc = ADC; //Lê o valor convertido
+        
+        //Converte o valor ADC para um valor entre 0 e 255
+        int valor_pwm = (valor_adc * 255) / 1023;
+        
+        //Exibe o valor PWM no display de 7 segmentos
+        PORTB = valor_pwm;
+        
+        _delay_ms(10); //Aguarda 10ms antes de iniciar a próxima conversão
+    }
+    
+    return 0;
+}
